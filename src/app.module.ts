@@ -1,29 +1,35 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { configurations } from "./config";
-import { PrismaModule } from "./prisma/prisma.module";
-import { HealthModule } from "./health/health.module";
-import { UserModule } from "./modules/user/user.module";
-import { PostModule } from "./modules/post/post.module";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { configurations } from './config';
+import { PrismaModule } from './prisma/prisma.module';
+import { HealthModule } from './health/health.module';
+import { UserModule } from './modules/user/user.module';
+import { PostModule } from './modules/post/post.module';
+import { CategoryModule } from './modules/category/category.module';
+import { GraphqlModule } from './graphql/graphql.module';
 
 @Module({
   imports: [
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: ".env",
+      envFilePath: '.env',
       load: configurations,
     }),
 
-    // Database
+    // Database (🔑 SHARED by all modules - REST & GraphQL)
     PrismaModule,
+
+    // GraphQL Configuration
+    GraphqlModule,
 
     // Infrastructure
     HealthModule,
 
-    // Feature Modules
+    // Feature Modules (each has REST Controller + GraphQL Resolver)
     UserModule,
     PostModule,
+    CategoryModule,
   ],
 })
 export class AppModule {}

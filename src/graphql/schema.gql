@@ -1,0 +1,243 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AuthorType {
+  email: String!
+  id: Int!
+  name: String
+}
+
+type CategoryPostType {
+  id: Int!
+  title: String!
+}
+
+"""🔸 GRAPHQL ONLY: Category statistics"""
+type CategoryStatistics {
+  """Number of active categories"""
+  activeCategories: Int!
+
+  """Categories that have posts"""
+  categoriesWithPosts: Int!
+
+  """Total number of categories"""
+  totalCategories: Int!
+}
+
+type CategoryType {
+  color: String
+  createdAt: DateTime!
+  description: String
+  id: Int!
+  isActive: Boolean!
+  name: String!
+  posts: [CategoryPostType!]
+  updatedAt: DateTime!
+}
+
+"""Input for creating a new category"""
+input CreateCategoryInput {
+  """Hex color code (e.g., #3B82F6)"""
+  color: String
+
+  """Category description"""
+  description: String
+
+  """Unique category name"""
+  name: String!
+}
+
+input CreatePostInput {
+  authorId: Int!
+  content: String
+  published: Boolean = false
+  title: String!
+}
+
+input CreateUserInput {
+  email: String!
+  name: String
+  password: String!
+  role: Role = USER
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Mutation {
+  """Create a new category (also available via REST)"""
+  createCategory(input: CreateCategoryInput!): CategoryType!
+
+  """Create a new post"""
+  createPost(input: CreatePostInput!): PostType!
+
+  """Create a new user"""
+  createUser(input: CreateUserInput!): UserType!
+
+  """Delete a category (also available via REST)"""
+  deleteCategory(id: Int!): Boolean!
+
+  """Delete a post"""
+  deletePost(id: Int!): Boolean!
+
+  """Delete a user"""
+  deleteUser(id: Int!): Boolean!
+
+  """Publish a post"""
+  publishPost(id: Int!): PostType!
+
+  """Unpublish a post"""
+  unpublishPost(id: Int!): PostType!
+
+  """Update a category (also available via REST)"""
+  updateCategory(id: Int!, input: UpdateCategoryInput!): CategoryType!
+
+  """Update an existing post"""
+  updatePost(id: Int!, input: UpdatePostInput!): PostType!
+
+  """Update an existing user"""
+  updateUser(id: Int!, input: UpdateUserInput!): UserType!
+}
+
+type PaginatedCategories {
+  data: [CategoryType!]!
+  meta: PaginationMeta!
+}
+
+type PaginatedPosts {
+  data: [PostType!]!
+  meta: PaginationMeta!
+}
+
+type PaginatedUsers {
+  data: [UserType!]!
+  meta: PaginationMeta!
+}
+
+type PaginationMeta {
+  limit: Int!
+  page: Int!
+  total: Int!
+  totalPages: Int!
+}
+
+type PostType {
+  author: AuthorType
+  authorId: Int!
+  content: String
+  createdAt: DateTime!
+  id: Int!
+  published: Boolean!
+  title: String!
+  updatedAt: DateTime!
+}
+
+type Query {
+  """Get all categories with pagination (also available via REST)"""
+  categories(query: QueryCategoryInput): PaginatedCategories!
+
+  """Get a category by ID (also available via REST)"""
+  category(id: Int!): CategoryType!
+
+  """🔹 GRAPHQL ONLY: Get category statistics"""
+  categoryStatistics: CategoryStatistics!
+
+  """🔹 GRAPHQL ONLY: Get category with its posts included"""
+  categoryWithPosts(id: Int!): CategoryType!
+
+  """Get a post by ID"""
+  post(id: Int!): PostType!
+
+  """Get all posts with pagination"""
+  posts(query: QueryPostInput): PaginatedPosts!
+
+  """Get all published posts"""
+  publishedPosts: [PostType!]!
+
+  """Get a user by ID"""
+  user(id: Int!): UserType!
+
+  """Get all users with pagination"""
+  users(query: QueryUserInput): PaginatedUsers!
+}
+
+"""Query parameters for listing categories"""
+input QueryCategoryInput {
+  """Filter by active status"""
+  isActive: Boolean
+  limit: Int = 10
+  page: Int = 1
+
+  """Search in name and description"""
+  search: String
+}
+
+input QueryPostInput {
+  authorId: Int
+  limit: Int = 10
+  page: Int = 1
+  published: Boolean
+  search: String
+}
+
+input QueryUserInput {
+  limit: Int = 10
+  page: Int = 1
+  search: String
+}
+
+"""User roles"""
+enum Role {
+  ADMIN
+  USER
+}
+
+"""Input for updating a category"""
+input UpdateCategoryInput {
+  """Hex color code"""
+  color: String
+
+  """Category description"""
+  description: String
+
+  """Active status"""
+  isActive: Boolean
+
+  """Unique category name"""
+  name: String
+}
+
+input UpdatePostInput {
+  content: String
+  published: Boolean
+  title: String
+}
+
+input UpdateUserInput {
+  email: String
+  isActive: Boolean
+  name: String
+  password: String
+  role: Role
+}
+
+type UserPost {
+  createdAt: DateTime!
+  id: Int!
+  published: Boolean!
+  title: String!
+}
+
+type UserType {
+  createdAt: DateTime!
+  email: String!
+  id: Int!
+  isActive: Boolean!
+  name: String
+  posts: [UserPost!]
+  role: Role!
+  updatedAt: DateTime!
+}
