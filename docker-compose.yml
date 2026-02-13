@@ -19,6 +19,23 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: nestjs_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - nestjs_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Uncomment to run the app in Docker as well
   # app:
   #   build:
@@ -28,6 +45,8 @@ services:
   #   restart: unless-stopped
   #   environment:
   #     DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nestjs_db?schema=public
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: 6379
   #     PORT: 3000
   #     NODE_ENV: production
   #   ports:
@@ -35,11 +54,14 @@ services:
   #   depends_on:
   #     postgres:
   #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
   #   networks:
   #     - nestjs_network
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   nestjs_network:

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { configurations } from './config';
 import { PrismaModule } from './prisma/prisma.module';
+import { RedisModule } from './redis';
 import { HealthModule } from './health/health.module';
 import { UserModule } from './modules/user/user.module';
 import { PostModule } from './modules/post/post.module';
@@ -19,6 +20,9 @@ import { GraphqlModule } from './graphql/graphql.module';
 
     // Database (🔑 SHARED by all modules - REST & GraphQL)
     PrismaModule,
+
+    // Cache (🔑 GLOBAL - available to all modules)
+    RedisModule,
 
     // GraphQL Configuration
     GraphqlModule,
