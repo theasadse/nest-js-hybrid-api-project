@@ -11,8 +11,8 @@ export class RedisService implements OnModuleDestroy {
   // ─── Basic Operations ─────────────────────────────────────
 
   /**
-   * Get a value by key
-   */
+   * Get a value by key */
+
   async get(key: string): Promise<string | null> {
     return this.redis.get(key);
   }
@@ -194,11 +194,22 @@ export class RedisService implements OnModuleDestroy {
 
   /**
    * Delete all keys matching a pattern
+   *
+   * Note: redis.keys() returns full key names (with keyPrefix),
+   * but redis.del() also prepends keyPrefix automatically.
+   * We must strip the prefix to avoid double-prefixing.
    */
   async deleteByPattern(pattern: string): Promise<number> {
     const keys = await this.redis.keys(pattern);
     if (keys.length === 0) return 0;
-    return this.redis.del(...keys);
+    this.logger.log('keys..........', keys);
+    // Strip the keyPrefix from returned keys to avoid double-prefixing
+    const prefix = this.redis.options.keyPrefix || '';
+    const unprefixedKeys = keys.map((key) =>
+      key.startsWith(prefix) ? key.slice(prefix.length) : key,
+    );
+    this.logger.log('unprefixedKeys..........', unprefixedKeys);
+    return this.redis.del(...unprefixedKeys);
   }
 
   /**

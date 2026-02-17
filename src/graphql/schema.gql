@@ -55,6 +55,24 @@ input CreatePostInput {
   title: String!
 }
 
+"""Input for creating a new subscription"""
+input CreateSubscriptionInput {
+  """Auto-renew"""
+  autoRenew: Boolean = true
+
+  """Customer ID who owns the subscription"""
+  customerId: Int!
+
+  """Subscription end date"""
+  endDate: DateTime
+
+  """Subscription plan"""
+  plan: SubscriptionPlan = FREE
+
+  """Monthly price"""
+  price: Float = 0
+}
+
 input CreateUserInput {
   email: String!
   name: String
@@ -74,6 +92,9 @@ type Mutation {
   """Create a new post"""
   createPost(input: CreatePostInput!): PostType!
 
+  """Create a new subscription (GraphQL ONLY)"""
+  createSubscription(input: CreateSubscriptionInput!): SubscriptionType!
+
   """Create a new user"""
   createUser(input: CreateUserInput!): UserType!
 
@@ -82,6 +103,9 @@ type Mutation {
 
   """Delete a post"""
   deletePost(id: Int!): Boolean!
+
+  """Delete a subscription (GraphQL ONLY)"""
+  deleteSubscription(id: Int!): Boolean!
 
   """Delete a user"""
   deleteUser(id: Int!): Boolean!
@@ -98,6 +122,9 @@ type Mutation {
   """Update an existing post"""
   updatePost(id: Int!, input: UpdatePostInput!): PostType!
 
+  """Update an existing subscription (GraphQL ONLY)"""
+  updateSubscription(id: Int!, input: UpdateSubscriptionInput!): SubscriptionType!
+
   """Update an existing user"""
   updateUser(id: Int!, input: UpdateUserInput!): UserType!
 }
@@ -109,6 +136,11 @@ type PaginatedCategories {
 
 type PaginatedPosts {
   data: [PostType!]!
+  meta: PaginationMeta!
+}
+
+type PaginatedSubscriptions {
+  data: [SubscriptionType!]!
   meta: PaginationMeta!
 }
 
@@ -157,6 +189,15 @@ type Query {
   """Get all published posts"""
   publishedPosts: [PostType!]!
 
+  """Get a subscription by ID (GraphQL ONLY)"""
+  subscription(id: Int!): SubscriptionType!
+
+  """🔹 GRAPHQL ONLY: Get subscription statistics"""
+  subscriptionStatistics: SubscriptionStatistics!
+
+  """Get all subscriptions with pagination and filters (GraphQL ONLY)"""
+  subscriptions(query: QuerySubscriptionInput): PaginatedSubscriptions!
+
   """Get a user by ID"""
   user(id: Int!): UserType!
 
@@ -183,6 +224,20 @@ input QueryPostInput {
   search: String
 }
 
+"""Query parameters for listing subscriptions"""
+input QuerySubscriptionInput {
+  """Filter by customer ID"""
+  customerId: Int
+  limit: Int = 10
+  page: Int = 1
+
+  """Filter by plan"""
+  plan: SubscriptionPlan
+
+  """Filter by status"""
+  status: SubscriptionStatus
+}
+
 input QueryUserInput {
   limit: Int = 10
   page: Int = 1
@@ -193,6 +248,58 @@ input QueryUserInput {
 enum Role {
   ADMIN
   USER
+}
+
+type SubscriptionCustomer {
+  email: String!
+  firstName: String!
+  id: Int!
+  lastName: String!
+}
+
+"""Available subscription plans"""
+enum SubscriptionPlan {
+  BASIC
+  ENTERPRISE
+  FREE
+  PRO
+}
+
+"""🔸 GRAPHQL ONLY: Subscription statistics"""
+type SubscriptionStatistics {
+  """Active subscriptions"""
+  activeSubscriptions: Int!
+
+  """Cancelled subscriptions"""
+  cancelledSubscriptions: Int!
+
+  """Total monthly revenue"""
+  totalRevenue: Float!
+
+  """Total number of subscriptions"""
+  totalSubscriptions: Int!
+}
+
+"""Subscription status values"""
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PAUSED
+}
+
+type SubscriptionType {
+  autoRenew: Boolean!
+  createdAt: DateTime!
+  customer: SubscriptionCustomer
+  customerId: Int!
+  endDate: DateTime
+  id: Int!
+  plan: SubscriptionPlan!
+  price: Float!
+  startDate: DateTime!
+  status: SubscriptionStatus!
+  updatedAt: DateTime!
 }
 
 """Input for updating a category"""
@@ -214,6 +321,24 @@ input UpdatePostInput {
   content: String
   published: Boolean
   title: String
+}
+
+"""Input for updating a subscription"""
+input UpdateSubscriptionInput {
+  """Auto-renew"""
+  autoRenew: Boolean
+
+  """Subscription end date"""
+  endDate: DateTime
+
+  """Subscription plan"""
+  plan: SubscriptionPlan
+
+  """Monthly price"""
+  price: Float
+
+  """Subscription status"""
+  status: SubscriptionStatus
 }
 
 input UpdateUserInput {

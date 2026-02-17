@@ -52,6 +52,7 @@ async function bootstrap() {
       .addTag('health', 'Health check endpoints')
       .addTag('users', 'User management')
       .addTag('posts', 'Post management')
+      .addTag('customers', 'Customer management (REST only)')
       .addBearerAuth()
       .build();
 

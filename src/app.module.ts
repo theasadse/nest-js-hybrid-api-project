@@ -7,6 +7,8 @@ import { HealthModule } from './health/health.module';
 import { UserModule } from './modules/user/user.module';
 import { PostModule } from './modules/post/post.module';
 import { CategoryModule } from './modules/category/category.module';
+import { CustomerModule } from './modules/customer/customer.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { GraphqlModule } from './graphql/graphql.module';
 
 @Module({
@@ -17,23 +19,22 @@ import { GraphqlModule } from './graphql/graphql.module';
       envFilePath: '.env',
       load: configurations,
     }),
-
     // Database (🔑 SHARED by all modules - REST & GraphQL)
     PrismaModule,
-
     // Cache (🔑 GLOBAL - available to all modules)
     RedisModule,
-
     // GraphQL Configuration
     GraphqlModule,
-
     // Infrastructure
     HealthModule,
-
-    // Feature Modules (each has REST Controller + GraphQL Resolver)
+    // Feature Modules (REST + GraphQL)
     UserModule,
     PostModule,
     CategoryModule,
+    // REST Only Module (Controller + Service, NO Resolver)
+    CustomerModule,
+    // GraphQL Only Module (Resolver + Service, NO Controller)
+    SubscriptionModule,
   ],
 })
 export class AppModule {}
