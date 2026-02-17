@@ -195,21 +195,32 @@ export class RedisService implements OnModuleDestroy {
   /**
    * Delete all keys matching a pattern
    *
-   * Note: redis.keys() returns full key names (with keyPrefix),
-   * but redis.del() also prepends keyPrefix automatically.
-   * We must strip the prefix to avoid double-prefixing.
+   * IMPORTANT: ioredis does NOT automatically prefix the pattern in KEYS command,
+   * but DOES return keys with prefix and DOES prefix keys in DEL command.
+   * So we must: 1) Add prefix to pattern, 2) Get keys with prefix, 3) Strip prefix for DEL
    */
   async deleteByPattern(pattern: string): Promise<number> {
-    const keys = await this.redis.keys(pattern);
-    if (keys.length === 0) return 0;
-    this.logger.log('keys..........', keys);
-    // Strip the keyPrefix from returned keys to avoid double-prefixing
     const prefix = this.redis.options.keyPrefix || '';
+
+    // ioredis doesn't prefix the pattern, so we must do it manually
+    const prefixedPattern = prefix + pattern;
+    this.logger.log(`[deleteByPattern] Searching for pattern: ${prefixedPattern}`);
+
+    const keys = await this.redis.keys(prefixedPattern);
+    this.logger.log(`[deleteByPattern] Found ${keys.length} keys:`, keys);
+
+    if (keys.length === 0) return 0;
+
+    // Keys returned include the prefix, but del() will add it again, so strip it
     const unprefixedKeys = keys.map((key) =>
       key.startsWith(prefix) ? key.slice(prefix.length) : key,
     );
-    this.logger.log('unprefixedKeys..........', unprefixedKeys);
-    return this.redis.del(...unprefixedKeys);
+    this.logger.log(`[deleteByPattern] Deleting keys (unprefixed):`, unprefixedKeys);
+
+    const deletedCount = await this.redis.del(...unprefixedKeys);
+    this.logger.log(`[deleteByPattern] Deleted ${deletedCount} keys`);
+
+    return deletedCount;
   }
 
   /**
