@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, Int, registerEnumType, GraphQLISODateTime } from '@nestjs/graphql';
 import { Role } from '@prisma/client';
 import { PaginationMeta } from '../../../common/graphql';
 
@@ -20,7 +20,7 @@ export class UserPostType {
   @Field()
   published: boolean;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   createdAt: Date;
 }
 
@@ -41,10 +41,10 @@ export class UserType {
   @Field()
   isActive: boolean;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   createdAt: Date;
 
-  @Field()
+  @Field(() => GraphQLISODateTime)
   updatedAt: Date;
 
   @Field(() => [UserPostType], { nullable: true })
